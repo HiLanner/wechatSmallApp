@@ -91,8 +91,49 @@ data: {
 ```
 swiper中为图片轮播的区域，其中autoplay，interval，duration为轮播图的属性，其中autoplay为设置是否自动播放，interval为设置是否时间间隔即每张图片的显示时间，duration为延迟时间即图片在滑动时所需的时间，wx:for为一个循环语句，循环js中的imgurl值；在js文件中，主要编写，事件函数，比如changeAutoplay()改变是否自动播放，intervalChange()改变间隔时间，durationChange()改变延迟时间
 
+>增加目录列表
 
+* 先编写我们想要的页面结构
 
+```
+<view class="news-item-container">
+    <block wx:for="{{list}}" wx:for-index="id">
+      <text wx:if="{{item.header}}" class="sub-title">{{item.header}}</text>
+      <navigator wx:else url="../detail/detail?id={{item.id}}">
+        <view class="news-item" >
+          <view class="news-item-left">
+            <text class="news-item-title">{{item.title}}</text>
+          </view>
+          <view class="news-item-right">
+            <image src="{{item.images[0]}}" class="news-image"/>
+          </view>
+        </view>
+      </navigator>
+    </block>
+    <button type="primary" class="load-btn" size="mini" loading="{{loading}}" plain="{{plain}}" bindtap="loadMore"> 更多 </button>
+  </view>
+```
+以上为一个循环块，wx:for用来循环list中的内容，即我们目录列表上的每个条目，这里是比较简单的内容很好理解。主要页面逻辑在index.js文件中，我们来看看
+
+```
+ onLoad: function () {
+    var that = this
+    wx.request({
+      url: 'http://news-at.xxx.com/api/4/news/latest',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      success: function (res) {
+         that.setData({
+           banner: res.data.top_stories,
+           list: [{ header: '今日热闻' }].concat(res.data.stories)
+         })
+      }
+    })
+```
+onload为页面加载的时候调用的函数，url为请求目录列表数据的api，headers为请求协议的首部信息（熟悉计算机网络的都知道），此处数据类型为json，success为请求成功后调用的函数，setData内为请求返回的data
+
+**我觉得微信小程序，前端内容主要是页面的编写，并向一些后台写好的api请求数据并解析展示在页面上**
 
 
 
